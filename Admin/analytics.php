@@ -315,7 +315,7 @@ $growth = $last_month > 0 ? (($this_month - $last_month) / $last_month) * 100 : 
             </div>
             <div class="stat-card">
                 <i class="fas fa-peso-sign"></i>
-                <h3>₱<?php echo number_format($total_budget, 0); ?></h3>
+                <h3>&#8369;<?php echo number_format($total_budget, 0); ?></h3>
                 <p>Total Budget</p>
             </div>
             <div class="stat-card">

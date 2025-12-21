@@ -1,5 +1,6 @@
 ﻿<?php
 session_start();
+header('Content-Type: text/html; charset=utf-8');
 
 // Check if user is logged in and is admin
 if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
@@ -13,6 +14,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 include '../conn.php';
+$conn->set_charset("utf8mb4");
 
 // Get scholarship distribution data
 $distribution = [];
@@ -63,6 +65,7 @@ if ($result) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholarship Distribution Report - SKSU SDP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -261,7 +264,7 @@ if ($result) {
 
         .chart-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -365,7 +368,7 @@ if ($result) {
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>â‚±<?php echo number_format($total_budget, 2); ?></h3>
+                    <h3>&#8369;<?php echo number_format($total_budget, 2); ?></h3>
                     <p>Total Budget per Semester</p>
                 </div>
             </div>
@@ -377,26 +380,6 @@ if ($result) {
                 <div class="stat-info">
                     <h3><?php echo count($distribution); ?></h3>
                     <p>Active Scholarship Programs</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="chart-grid">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-chart-bar"></i> Scholars per Scholarship</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="scholarshipChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-chart-pie"></i> Budget Distribution</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="budgetChart"></canvas>
                 </div>
             </div>
         </div>
@@ -413,7 +396,6 @@ if ($result) {
                             <th>Amount/Semester</th>
                             <th>Scholars Enrolled</th>
                             <th>Total Budget/Semester</th>
-                            <th>Coverage</th>
                             <th>Campuses</th>
                         </tr>
                     </thead>
@@ -425,21 +407,13 @@ if ($result) {
                                 ?>
                                 <tr>
                                     <td><strong><?php echo htmlspecialchars($item['scholarship_name']); ?></strong></td>
-                                    <td><span class="amount">â‚±<?php echo number_format($item['amount_per_sem'], 2); ?></span></td>
+                                    <td><span class="amount">&#8369;<?php echo number_format($item['amount_per_sem'], 2); ?></span></td>
                                     <td>
                                         <span class="badge badge-primary">
                                             <i class="fas fa-user-graduate"></i> <?php echo $item['scholar_count']; ?>
                                         </span>
                                     </td>
-                                    <td><span class="amount">â‚±<?php echo number_format($item['total_amount'], 2); ?></span></td>
-                                    <td>
-                                        <div style="min-width: 100px;">
-                                            <strong><?php echo number_format($percentage, 1); ?>%</strong>
-                                            <div class="progress-bar">
-                                                <div class="progress-fill" style="width: <?php echo $percentage; ?>%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td><span class="amount">&#8369;<?php echo number_format($item['total_amount'], 2); ?></span></td>
                                     <td>
                                         <?php if ($item['campuses']): ?>
                                             <small style="color: #5f6368;"><?php echo htmlspecialchars($item['campuses']); ?></small>
@@ -456,12 +430,12 @@ if ($result) {
                                         <i class="fas fa-user-graduate"></i> <?php echo number_format($total_scholars); ?>
                                     </span>
                                 </td>
-                                <td><span class="amount">â‚±<?php echo number_format($total_budget, 2); ?></span></td>
+                                <td><span class="amount">&#8369;<?php echo number_format($total_budget, 2); ?></span></td>
                                 <td colspan="2"></td>
                             </tr>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 30px; color: #5f6368;">
+                                <td colspan="5" style="text-align: center; padding: 30px; color: #5f6368;">
                                     No distribution data available
                                 </td>
                             </tr>
@@ -522,96 +496,6 @@ if ($result) {
         </div>
     </div>
 
-    <script>
-        // Scholarship Distribution Chart
-        const scholarshipCtx = document.getElementById('scholarshipChart').getContext('2d');
-        new Chart(scholarshipCtx, {
-            type: 'bar',
-            data: {
-                labels: <?php echo json_encode(array_column($distribution, 'scholarship_name')); ?>,
-                datasets: [{
-                    label: 'Number of Scholars',
-                    data: <?php echo json_encode(array_column($distribution, 'scholar_count')); ?>,
-                    backgroundColor: 'rgba(26, 115, 232, 0.8)',
-                    borderColor: 'rgba(26, 115, 232, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                }
-            }
-        });
-
-        // Budget Distribution Chart
-        const budgetCtx = document.getElementById('budgetChart').getContext('2d');
-        new Chart(budgetCtx, {
-            type: 'doughnut',
-            data: {
-                labels: <?php echo json_encode(array_column($distribution, 'scholarship_name')); ?>,
-                datasets: [{
-                    data: <?php echo json_encode(array_column($distribution, 'total_amount')); ?>,
-                    backgroundColor: [
-                        'rgba(26, 115, 232, 0.8)',
-                        'rgba(15, 157, 88, 0.8)',
-                        'rgba(244, 180, 0, 0.8)',
-                        'rgba(147, 51, 234, 0.8)',
-                        'rgba(234, 67, 53, 0.8)',
-                        'rgba(52, 168, 83, 0.8)',
-                        'rgba(66, 133, 244, 0.8)',
-                        'rgba(251, 188, 4, 0.8)',
-                        'rgba(234, 67, 53, 0.8)',
-                        'rgba(147, 51, 234, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 10,
-                            font: {
-                                size: 11
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += 'â‚±' + context.parsed.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                                return label;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    </script>
 </body>
 </html>
 <?php $conn->close(); ?>

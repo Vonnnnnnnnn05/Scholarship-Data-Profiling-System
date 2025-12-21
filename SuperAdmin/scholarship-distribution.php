@@ -365,7 +365,7 @@ if ($result) {
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>₱<?php echo number_format($total_budget, 2); ?></h3>
+                    <h3>&#8369;<?php echo number_format($total_budget, 2); ?></h3>
                     <p>Total Budget per Semester</p>
                 </div>
             </div>
@@ -413,7 +413,6 @@ if ($result) {
                             <th>Amount/Semester</th>
                             <th>Scholars Enrolled</th>
                             <th>Total Budget/Semester</th>
-                            <th>Coverage</th>
                             <th>Campuses</th>
                         </tr>
                     </thead>
@@ -425,21 +424,13 @@ if ($result) {
                                 ?>
                                 <tr>
                                     <td><strong><?php echo htmlspecialchars($item['scholarship_name']); ?></strong></td>
-                                    <td><span class="amount">₱<?php echo number_format($item['amount_per_sem'], 2); ?></span></td>
+                                    <td><span class="amount">&#8369;<?php echo number_format($item['amount_per_sem'], 2); ?></span></td>
                                     <td>
                                         <span class="badge badge-primary">
                                             <i class="fas fa-user-graduate"></i> <?php echo $item['scholar_count']; ?>
                                         </span>
                                     </td>
-                                    <td><span class="amount">₱<?php echo number_format($item['total_amount'], 2); ?></span></td>
-                                    <td>
-                                        <div style="min-width: 100px;">
-                                            <strong><?php echo number_format($percentage, 1); ?>%</strong>
-                                            <div class="progress-bar">
-                                                <div class="progress-fill" style="width: <?php echo $percentage; ?>%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td><span class="amount">&#8369;<?php echo number_format($item['total_amount'], 2); ?></span></td>
                                     <td>
                                         <?php if ($item['campuses']): ?>
                                             <small style="color: #5f6368;"><?php echo htmlspecialchars($item['campuses']); ?></small>
@@ -456,12 +447,12 @@ if ($result) {
                                         <i class="fas fa-user-graduate"></i> <?php echo number_format($total_scholars); ?>
                                     </span>
                                 </td>
-                                <td><span class="amount">₱<?php echo number_format($total_budget, 2); ?></span></td>
-                                <td colspan="2"></td>
+                                <td><span class="amount">&#8369;<?php echo number_format($total_budget, 2); ?></span></td>
+                                <td></td>
                             </tr>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 30px; color: #5f6368;">
+                                <td colspan="5" style="text-align: center; padding: 30px; color: #5f6368;">
                                     No distribution data available
                                 </td>
                             </tr>

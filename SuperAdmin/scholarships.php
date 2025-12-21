@@ -397,7 +397,7 @@ $scholarships = $stmt->get_result();
                                     <td><?php echo $scholarship['id']; ?></td>
                                     <td><strong><?php echo htmlspecialchars($scholarship['scholarship_name']); ?></strong></td>
                                     <td>
-                                        <span class="amount">₱<?php echo number_format($scholarship['amount_per_sem'], 2); ?></span>
+                                        <span class="amount">&#8369;<?php echo number_format($scholarship['amount_per_sem'], 2); ?></span>
                                     </td>
                                     <td>
                                         <span class="badge badge-success">

@@ -48,7 +48,7 @@ $where_clause = 'WHERE ' . implode(' AND ', $where);
 $campuses = $conn->query("SELECT DISTINCT c.id, c.campus_name FROM scholars s LEFT JOIN campuses c ON s.campus_id = c.id ORDER BY c.campus_name");
 
 // Get scholarships for filter
-$scholarships = $conn->query("SELECT scholarship_name FROM scholarships ORDER BY scholarship_name");
+$scholarships = $conn->query("SELECT id, scholarship_name FROM scholarships ORDER BY scholarship_name");
 
 // Get report data based on type
 if ($report_type == 'summary') {
@@ -437,21 +437,21 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['scholarship_name']); ?></td>
                                         <td><?php echo number_format($row['scholar_count']); ?></td>
-                                        <td>₱<?php echo number_format($row['amount_per_sem'], 2); ?></td>
-                                        <td>₱<?php echo number_format($row['total_budget'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['amount_per_sem'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['total_budget'], 2); ?></td>
                                     <?php elseif ($report_type == 'detailed'): ?>
                                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                                         <td><?php echo htmlspecialchars($row['last_name'] . ', ' . $row['first_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['course']); ?></td>
                                         <td><?php echo htmlspecialchars($row['scholarship_name']); ?></td>
-                                        <td>₱<?php echo number_format($row['amount_per_sem'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['amount_per_sem'], 2); ?></td>
                                         <td><?php echo htmlspecialchars($row['encoded_by_name']); ?></td>
                                     <?php else: ?>
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo number_format($row['total_scholars']); ?></td>
                                         <td><?php echo number_format($row['scholarship_types']); ?></td>
-                                        <td>₱<?php echo number_format($row['total_budget'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['total_budget'], 2); ?></td>
                                     <?php endif; ?>
                                 </tr>
                             <?php endwhile; ?>

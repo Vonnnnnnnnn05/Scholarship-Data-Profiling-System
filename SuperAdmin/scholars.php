@@ -147,6 +147,15 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
             background: #1557b0;
         }
 
+        .btn-success {
+            background: #0f9d58;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0b7a44;
+        }
+
         .btn-danger {
             background: #ea4335;
             color: white;
@@ -387,9 +396,14 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
     <div class="main-content">
         <div class="page-header">
             <h1><i class="fas fa-user-graduate"></i> Scholars Management</h1>
-            <a href="add-scholar.php" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Scholar
-            </a>
+            <div style="display: flex; gap: 10px;">
+                <a href="import-scholars.php" class="btn btn-success">
+                    <i class="fas fa-file-import"></i> Import CSV
+                </a>
+                <a href="add-scholar.php" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Scholar
+                </a>
+            </div>
         </div>
 
         <div class="card">

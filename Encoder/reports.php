@@ -438,20 +438,20 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['scholarship_name']); ?></td>
                                         <td><?php echo number_format($row['scholar_count']); ?></td>
-                                        <td>₱<?php echo number_format($row['amount_per_sem'], 2); ?></td>
-                                        <td>₱<?php echo number_format($row['total_budget'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['amount_per_sem'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['total_budget'], 2); ?></td>
                                     <?php elseif ($report_type == 'detailed'): ?>
                                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                                         <td><?php echo htmlspecialchars($row['last_name'] . ', ' . $row['first_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['course']); ?></td>
                                         <td><?php echo htmlspecialchars($row['scholarship_name']); ?></td>
-                                        <td>₱<?php echo number_format($row['amount_per_sem'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['amount_per_sem'], 2); ?></td>
                                     <?php else: ?>
                                         <td><?php echo htmlspecialchars($row['campus_name']); ?></td>
                                         <td><?php echo number_format($row['total_scholars']); ?></td>
                                         <td><?php echo number_format($row['scholarship_types']); ?></td>
-                                        <td>₱<?php echo number_format($row['total_budget'], 2); ?></td>
+                                        <td>&#8369;<?php echo number_format($row['total_budget'], 2); ?></td>
                                     <?php endif; ?>
                                 </tr>
                             <?php endwhile; ?>

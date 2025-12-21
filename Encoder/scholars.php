@@ -145,6 +145,15 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
             background: #1557b0;
         }
 
+        .btn-success {
+            background: #0f9d58;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0b7a44;
+        }
+
         .btn-secondary {
             background: #5f6368;
             color: white;
@@ -237,6 +246,16 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
         .badge-primary {
             background: #e8f0fe;
             color: #1a73e8;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
         }
 
         .badge-success {
@@ -362,9 +381,14 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
     <div class="main-content">
         <div class="page-header">
             <h1><i class="fas fa-user-graduate"></i> My Scholars</h1>
-            <a href="add-scholar.php" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Scholar
-            </a>
+            <div style="display: flex; gap: 10px;">
+                <a href="import-scholars.php" class="btn btn-success">
+                    <i class="fas fa-file-import"></i> Import CSV
+                </a>
+                <a href="add-scholar.php" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Scholar
+                </a>
+            </div>
         </div>
 
         <div class="card">
@@ -431,6 +455,7 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
                             <th>Campus</th>
                             <th>Scholarship</th>
                             <th>Date Added</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -446,11 +471,16 @@ $scholarships = $conn->query("SELECT * FROM scholarships ORDER BY scholarship_na
                                     <td><span class="badge badge-primary"><?php echo htmlspecialchars($scholar['campus_name']); ?></span></td>
                                     <td><?php echo htmlspecialchars($scholar['scholarship_name']); ?></td>
                                     <td><?php echo date('M d, Y', strtotime($scholar['created_at'])); ?></td>
+                                    <td>
+                                        <a href="edit-scholar.php?id=<?php echo $scholar['id']; ?>" class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <i class="fas fa-user-graduate"></i>
                                         <h3>No Scholars Found</h3>

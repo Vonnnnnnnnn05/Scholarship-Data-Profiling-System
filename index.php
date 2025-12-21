@@ -516,6 +516,10 @@
             .footer-content {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .container {
+                padding: 0 30px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -531,23 +535,45 @@
                 display: block;
             }
             
+            .hero {
+                padding: 120px 0 80px;
+            }
+
             .hero h1 {
-                font-size: 36px;
+                font-size: 32px;
+                line-height: 1.3;
             }
             
             .hero p {
-                font-size: 18px;
+                font-size: 16px;
+                padding: 0 10px;
             }
             
             .hero-buttons {
                 flex-direction: column;
                 align-items: center;
+                gap: 12px;
+                padding: 0 20px;
             }
             
             .hero-buttons .btn {
                 width: 100%;
+                max-width: 350px;
+                padding: 14px 30px;
+                text-align: center;
+                font-size: 15px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+
+            .cta .btn {
+                width: 100%;
                 max-width: 300px;
-                margin-bottom: 10px;
+                display: block;
+                margin: 0 auto;
             }
             
             .steps {
@@ -557,6 +583,18 @@
             
             .steps:before {
                 display: none;
+            }
+
+            .feature-card {
+                padding: 25px;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .container {
+                padding: 0 20px;
             }
         }
 
@@ -574,7 +612,58 @@
             }
             
             .section-title h2 {
+                font-size: 24px;
+            }
+
+            .hero h1 {
                 font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .hero-buttons .btn {
+                max-width: 100%;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .cta h2 {
+                font-size: 26px;
+            }
+
+            .cta p {
+                font-size: 15px;
+                padding: 0 10px;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 {
+                font-size: 24px;
+            }
+
+            .hero-buttons .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .section-title h2 {
+                font-size: 22px;
             }
         }
 
@@ -1084,5 +1173,8 @@
             sectionObserver.observe(section);
         });
     </script>
+    
+    <!-- Tidio Live Chat -->
+    <script src="https://code.tidio.co/vpc1zm4uqouejkzwo9qhuwcpfb05krd4.js" async></script>
 </body>
 </html>
