@@ -199,6 +199,55 @@
             color: var(--white);
         }
 
+        .hero-callout {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px 22px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 30px rgba(13, 71, 161, 0.25);
+            backdrop-filter: blur(6px);
+            margin: 18px auto 24px;
+            max-width: 760px;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.18);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--white);
+            opacity: 0.95;
+        }
+
+        .hero-promo {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: var(--white);
+            line-height: 1.2;
+        }
+
+        .hero-promo span {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
         .hero p {
             font-size: 20px;
             max-width: 700px;
@@ -830,6 +879,90 @@
         .modal-footer a:hover {
             text-decoration: underline;
         }
+
+        /* Promo modal trigger */
+        .promo-launch {
+            position: fixed;
+            bottom: 120px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 900;
+        }
+
+        .promo-label {
+            background: var(--white);
+            color: #1f2933;
+            padding: 12px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgba(31, 41, 51, 0.15);
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .promo-fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #2f3ddf;
+            color: var(--white);
+            border: none;
+            box-shadow: 0 10px 24px rgba(47, 61, 223, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .promo-fab:hover {
+            background: #2431c2;
+            transform: translateY(-2px);
+        }
+
+        .promo-modal .modal-content {
+            max-width: 360px;
+            width: 90%;
+            position: fixed;
+            right: 24px;
+            bottom: 140px;
+            margin: 0;
+            border-radius: 18px;
+        }
+
+        .promo-modal .modal-header h2 {
+            margin-bottom: 12px;
+        }
+
+        .subsystem-fab {
+            position: fixed;
+            bottom: 190px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--deepseek-blue-light);
+            color: var(--white);
+            border: none;
+            box-shadow: 0 10px 25px rgba(13, 71, 161, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            z-index: 900;
+        }
+
+        .subsystem-fab:hover {
+            background: var(--deepseek-blue-dark);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -1031,11 +1164,35 @@
         </div>
     </div>
 
+    <!-- Promo Modal Trigger -->
+    <div class="promo-launch">
+        <div class="promo-label">Register Now! <span aria-hidden="true"></span></div>
+        <button class="promo-fab" id="promoBtn" aria-label="Open scholarship promo">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+    </div>
+
+    <!-- Promo Modal -->
+    <div id="promoModal" class="modal promo-modal">
+        <div class="modal-content">
+            <span class="modal-close" data-close="promo">&times;</span>
+            <div class="modal-header">
+                <h2>Scholarship Opportunity</h2>
+                <p>We invite qualified students to apply for the scholarship program. Please register to begin your application.</p>
+            </div>
+            <div style="text-align: center;">
+                <a class="btn btn-primary" href="http://localhost/scholarship">Register Now</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Login Modal functionality
         const loginModal = document.getElementById('loginModal');
         const loginBtn = document.getElementById('loginBtn');
         const closeBtn = document.querySelector('.modal-close');
+        const promoModal = document.getElementById('promoModal');
+        const promoBtn = document.getElementById('promoBtn');
 
         function openModal() {
             loginModal.classList.add('active');
@@ -1051,6 +1208,20 @@
             }, 400);
         }
 
+        function openPromoModal() {
+            promoModal.classList.add('active');
+            setTimeout(() => {
+                promoModal.classList.add('show');
+            }, 10);
+        }
+
+        function closePromoModal() {
+            promoModal.classList.remove('show');
+            setTimeout(() => {
+                promoModal.classList.remove('active');
+            }, 400);
+        }
+
         loginBtn.addEventListener('click', function(e) {
             e.preventDefault();
             openModal();
@@ -1060,9 +1231,16 @@
             closeModal();
         });
 
+        promoBtn.addEventListener('click', function() {
+            openPromoModal();
+        });
+
         window.addEventListener('click', function(e) {
             if (e.target === loginModal) {
                 closeModal();
+            }
+            if (e.target === promoModal) {
+                closePromoModal();
             }
         });
 
@@ -1071,6 +1249,15 @@
             if (e.key === 'Escape' && loginModal.classList.contains('active')) {
                 closeModal();
             }
+            if (e.key === 'Escape' && promoModal.classList.contains('active')) {
+                closePromoModal();
+            }
+        });
+
+        document.querySelectorAll('[data-close="promo"]').forEach(button => {
+            button.addEventListener('click', function() {
+                closePromoModal();
+            });
         });
 
         // Login form submission

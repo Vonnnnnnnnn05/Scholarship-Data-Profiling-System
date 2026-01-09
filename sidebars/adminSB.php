@@ -207,6 +207,18 @@
             <span>Campuses</span>
         </a>
 
+        <div class="menu-section">User Management</div>
+
+        <a href="users.php" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            <span>Manage Users</span>
+        </a>
+
+        <a href="add-user.php" class="menu-item">
+            <i class="fas fa-user-plus"></i>
+            <span>Add User</span>
+        </a>
+
         <div class="menu-section">Reports & Analytics</div>
 
         <a href="reports.php" class="menu-item">

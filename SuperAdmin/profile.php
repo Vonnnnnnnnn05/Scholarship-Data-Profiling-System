@@ -17,9 +17,87 @@ $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
+$profile_photo = isset($user['profile_photo']) ? $user['profile_photo'] : '';
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Handle photo upload
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['photo_upload'])) {
+    if (!isset($_FILES['profile_photo']) || $_FILES['profile_photo']['error'] === UPLOAD_ERR_NO_FILE) {
+        $errors[] = 'Please select a photo to upload';
+    } elseif ($_FILES['profile_photo']['error'] !== UPLOAD_ERR_OK) {
+        $errors[] = 'Failed to upload photo';
+    } else {
+        $column_check = $conn->query("SHOW COLUMNS FROM users LIKE 'profile_photo'");
+        if (!$column_check || $column_check->num_rows === 0) {
+            $add_column = $conn->query("ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL");
+            if (!$add_column) {
+                $errors[] = 'Profile photo feature is not available. Please add profile_photo column to users table.';
+            }
+        }
+
+        if (empty($errors)) {
+            $max_size = 2 * 1024 * 1024;
+            if ($_FILES['profile_photo']['size'] > $max_size) {
+                $errors[] = 'Photo must be 2MB or smaller';
+            } else {
+                $tmp_name = $_FILES['profile_photo']['tmp_name'];
+                $mime = '';
+                if (class_exists('finfo')) {
+                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+                    $mime = $finfo->file($tmp_name);
+                }
+                if ($mime === '' && function_exists('mime_content_type')) {
+                    $mime = mime_content_type($tmp_name);
+                }
+                $allowed = [
+                    'image/jpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/gif' => 'gif'
+                ];
+
+                if (!isset($allowed[$mime])) {
+                    $errors[] = 'Only JPG, PNG, or GIF images are allowed';
+                } else {
+                    $upload_dir = dirname(__DIR__) . '/images/profile-photos';
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0755, true);
+                    }
+
+                    $filename = 'user_' . $user_id . '_' . time() . '.' . $allowed[$mime];
+                    $relative_path = 'images/profile-photos/' . $filename;
+                    $target_path = $upload_dir . '/' . $filename;
+
+                    if (move_uploaded_file($tmp_name, $target_path)) {
+                        $stmt = $conn->prepare("UPDATE users SET profile_photo = ? WHERE id = ?");
+                        $stmt->bind_param("si", $relative_path, $user_id);
+                        if ($stmt->execute()) {
+                            if (!empty($profile_photo)) {
+                                $old_path = dirname(__DIR__) . '/' . $profile_photo;
+                                if (is_file($old_path)) {
+                                    unlink($old_path);
+                                }
+                            }
+
+                            $profile_photo = $relative_path;
+                            $action = "Updated profile photo";
+                            $log_stmt = $conn->prepare("INSERT INTO audit_logs (user_id, action) VALUES (?, ?)");
+                            $log_stmt->bind_param("is", $user_id, $action);
+                            $log_stmt->execute();
+
+                            $success = 'Profile photo updated successfully!';
+                        } else {
+                            $errors[] = 'Failed to save profile photo';
+                        }
+                    } else {
+                        $errors[] = 'Failed to save uploaded photo';
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Handle profile update
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['photo_upload'])) {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
     $current_password = trim($_POST['current_password']);
@@ -87,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
             $user = $stmt->get_result()->fetch_assoc();
+            $profile_photo = isset($user['profile_photo']) ? $user['profile_photo'] : $profile_photo;
         } else {
             $errors[] = 'Failed to update profile';
         }
@@ -175,6 +254,13 @@ if ($_SESSION['role'] == 'encoder' || $_SESSION['role'] == 'admin' || $_SESSION[
             margin: 0 auto 20px;
             font-size: 48px;
             color: white;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .profile-header h2 {
@@ -296,6 +382,11 @@ if ($_SESSION['role'] == 'encoder' || $_SESSION['role'] == 'admin' || $_SESSION[
             gap: 8px;
         }
 
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
         .btn-primary {
             background: #1a73e8;
             color: white;
@@ -343,6 +434,52 @@ if ($_SESSION['role'] == 'encoder' || $_SESSION['role'] == 'admin' || $_SESSION[
         }
 
         .activity-time {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .photo-form {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .photo-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .photo-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: #f1f3f4;
+            color: #202124;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .photo-label:hover {
+            background: #e8eaed;
+        }
+
+        .photo-filename {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .photo-hint {
             font-size: 12px;
             color: #5f6368;
         }
@@ -400,6 +537,16 @@ if ($_SESSION['role'] == 'encoder' || $_SESSION['role'] == 'admin' || $_SESSION[
                 html: '<?php echo implode("<br>", $errors); ?>'
             });
         <?php endif; ?>
+
+        const photoInput = document.getElementById('profile_photo');
+        const photoFilename = document.getElementById('photo_filename');
+        if (photoInput && photoFilename) {
+            photoInput.addEventListener('change', () => {
+                photoFilename.textContent = photoInput.files.length
+                    ? photoInput.files[0].name
+                    : 'No file selected';
+            });
+        }
     </script>
 
     <div class="main-content">
@@ -411,8 +558,24 @@ if ($_SESSION['role'] == 'encoder' || $_SESSION['role'] == 'admin' || $_SESSION[
             <div class="card">
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        <i class="fas fa-user"></i>
+                        <?php if (!empty($profile_photo)): ?>
+                            <img src="../<?php echo htmlspecialchars($profile_photo); ?>" alt="Profile Photo">
+                        <?php else: ?>
+                            <i class="fas fa-user"></i>
+                        <?php endif; ?>
                     </div>
+                    <form class="photo-form" method="POST" action="" enctype="multipart/form-data">
+                        <input type="hidden" name="photo_upload" value="1">
+                        <input class="photo-input" type="file" name="profile_photo" id="profile_photo" accept="image/*">
+                        <label class="photo-label" for="profile_photo">
+                            <i class="fas fa-image"></i> Choose Photo
+                        </label>
+                        <span class="photo-filename" id="photo_filename">No file selected</span>
+                        <span class="photo-hint">Max size 2MB (JPG/PNG/GIF)</span>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-upload"></i> Upload Photo
+                        </button>
+                    </form>
                     <h2><?php echo htmlspecialchars($user['name']); ?></h2>
                     <p><?php echo htmlspecialchars($user['email']); ?></p>
                     <?php if ($user['role'] == 'super_admin'): ?>

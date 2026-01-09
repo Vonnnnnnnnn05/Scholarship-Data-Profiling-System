@@ -419,6 +419,9 @@ $scholarships = $stmt->get_result();
                                             <a href="edit-scholarship.php?id=<?php echo $scholarship['id']; ?>" class="btn btn-secondary btn-sm">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
+                                            <button type="button" onclick="viewScholars(<?php echo $scholarship['id']; ?>, '<?php echo htmlspecialchars($scholarship['scholarship_name'], ENT_QUOTES); ?>')" class="btn btn-primary btn-sm" title="View Scholars" aria-label="View Scholars">
+                                                <i class="fas fa-users"></i> View
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -479,6 +482,58 @@ $scholarships = $stmt->get_result();
                 }
             });
         });
+
+        function escapeHtml(value) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return String(value).replace(/[&<>"']/g, (char) => map[char]);
+        }
+
+        function viewScholars(id, name) {
+            fetch(`../get-scholarship-scholars.php?scholarship_id=${encodeURIComponent(id)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Unable to load scholars.'
+                        });
+                        return;
+                    }
+
+                    if (!data.names || data.names.length === 0) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: name,
+                            text: 'No scholars enrolled.'
+                        });
+                        return;
+                    }
+
+                    const listItems = data.names
+                        .map((scholar) => `<li>${escapeHtml(scholar)}</li>`)
+                        .join('');
+
+                    Swal.fire({
+                        title: name,
+                        html: `<ul style="text-align:left; padding-left:18px; margin:0;">${listItems}</ul>`,
+                        confirmButtonColor: '#1a73e8'
+                    });
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while loading scholars.'
+                    });
+                });
+        }
     </script>
 </body>
 </html>

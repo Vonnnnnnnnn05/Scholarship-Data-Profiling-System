@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($role)) {
         $errors[] = "Role is required";
-    } elseif (!in_array($role, ['super_admin', 'admin', 'encoder'])) {
+    } elseif (!in_array($role, ['admin', 'encoder'])) {
         $errors[] = "Invalid role selected";
     }
 
@@ -370,7 +370,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="role">Role <span class="required">*</span></label>
                         <select id="role" name="role" required>
                             <option value="">Select Role</option>
-                            <option value="super_admin" <?php echo (isset($role) && $role == 'super_admin') ? 'selected' : ''; ?>>Super Admin</option>
                             <option value="admin" <?php echo (isset($role) && $role == 'admin') ? 'selected' : ''; ?>>Admin</option>
                             <option value="encoder" <?php echo (isset($role) && $role == 'encoder') ? 'selected' : ''; ?>>Encoder</option>
                         </select>
@@ -446,7 +445,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const roleInfo = document.getElementById('roleInfo');
 
         const roleDescriptions = {
-            'super_admin': '<p><strong>Super Admin:</strong> Full system access including user management, delete operations, system settings, and audit logs.</p>',
             'admin': '<p><strong>Admin:</strong> Can manage scholars, scholarships, and campuses. Cannot delete users or access system settings.</p>',
             'encoder': '<p><strong>Encoder:</strong> Limited access. Can only add and view scholars. Cannot modify scholarships or system data.</p>'
         };
