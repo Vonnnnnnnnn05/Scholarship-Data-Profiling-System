@@ -27,6 +27,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         body {
             background-color: var(--white);
             color: var(--text-dark);
@@ -573,15 +578,87 @@
 
         @media (max-width: 768px) {
             .navbar {
-                padding: 15px 0;
+                padding: 14px 0;
+                position: relative;
+            }
+            
+            .mobile-menu {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 42px;
+                height: 42px;
+                background: var(--deepseek-blue-very-light);
+                color: var(--deepseek-blue);
+                border-radius: 8px;
+                font-size: 20px;
+                cursor: pointer;
+                transition: all 0.25s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .mobile-menu:hover,
+            .mobile-menu:active {
+                background: var(--deepseek-blue);
+                color: var(--white);
             }
             
             .nav-links {
                 display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+                border-radius: 0 0 16px 16px;
+                padding: 16px 20px 24px;
+                gap: 8px;
+                z-index: 1001;
+                border-top: 1px solid #eef2f6;
             }
-            
-            .mobile-menu {
+
+            .nav-links.active {
+                display: flex;
+                animation: slideDownMenu 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+
+            @keyframes slideDownMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .nav-links li {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .nav-links a {
                 display: block;
+                padding: 12px 16px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 500;
+                color: var(--text-dark);
+            }
+
+            .nav-links a:hover {
+                background-color: var(--deepseek-blue-very-light);
+                color: var(--deepseek-blue);
+            }
+
+            .nav-links li:last-child a {
+                display: block;
+                text-align: center;
+                margin-top: 8px;
+                padding: 12px 20px;
             }
             
             .hero {
@@ -880,6 +957,21 @@
             text-decoration: underline;
         }
 
+        @media (max-width: 576px) {
+            .modal-content {
+                padding: 28px 20px;
+                width: 92%;
+                margin: 15px auto;
+            }
+            .modal-header h2 {
+                font-size: 22px;
+            }
+            .modal-close {
+                top: 12px;
+                right: 15px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1103,6 +1195,15 @@
 
         loginBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            const navLinks = document.querySelector('.nav-links');
+            const mobileMenuIcon = document.querySelector('.mobile-menu i');
+            if (navLinks && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                if (mobileMenuIcon) {
+                    mobileMenuIcon.classList.remove('fa-times');
+                    mobileMenuIcon.classList.add('fa-bars');
+                }
+            }
             openModal();
         });
 
@@ -1180,16 +1281,52 @@
             });
         });
 
-        // Mobile menu toggle
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            document.querySelector('.nav-links').classList.toggle('active');
-        });
+        // Mobile menu toggle & interactions
+        const mobileMenuBtn = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        const mobileMenuIcon = mobileMenuBtn ? mobileMenuBtn.querySelector('i') : null;
+
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = navLinks.classList.toggle('active');
+                if (mobileMenuIcon) {
+                    if (isActive) {
+                        mobileMenuIcon.classList.remove('fa-bars');
+                        mobileMenuIcon.classList.add('fa-times');
+                    } else {
+                        mobileMenuIcon.classList.remove('fa-times');
+                        mobileMenuIcon.classList.add('fa-bars');
+                    }
+                }
+            });
+
+            // Close mobile menu on clicking outside
+            document.addEventListener('click', function(e) {
+                if (!navLinks.contains(e.target) && !mobileMenuBtn.contains(e.target) && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    if (mobileMenuIcon) {
+                        mobileMenuIcon.classList.remove('fa-times');
+                        mobileMenuIcon.classList.add('fa-bars');
+                    }
+                }
+            });
+        }
 
         // Smooth scroll for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 
+                // Close mobile menu on link click
+                if (navLinks && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    if (mobileMenuIcon) {
+                        mobileMenuIcon.classList.remove('fa-times');
+                        mobileMenuIcon.classList.add('fa-bars');
+                    }
+                }
+
                 const targetId = this.getAttribute('href');
                 if(targetId === '#') return;
                 
